@@ -1,0 +1,20 @@
+﻿<?xml version="1.0"?>
+<DataForm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+          xmlns="http://www.enova.pl/schema/form.xsd"
+          RightName="Page:BrunchPage"
+          Priority="100000"
+          DataType="Soneta.Zadania.Projekt, Soneta.Zadania">
+  <Page Name="BrunchPage" CaptionHtml="Brunch" DataContext="{DataSource}">
+    <Group>
+      <Label CaptionHtml="Hello Soneta.CRM.Kontrahent,Soneta.Projektytrala !!!"/>
+      <Grid IsReadOnly="{New BrunchExtender.IsReadOnly}"  IsToolbarVisible="true"
+ Width="*" Height="*" EditValue="{New BrunchExtender.Wyswietlmarze}"  >
+        <Field CaptionHtml="data" Width="25" Visibility="1"  EditValue="{data}"></Field>
+        <Field CaptionHtml="brunch" EditValue="{brunch}"></Field>
+        <Field CaptionHtml="projekt" EditValue="{Projekt}"></Field>
+
+      </Grid>
+    </Group>
+  </Page>
+</DataForm>
