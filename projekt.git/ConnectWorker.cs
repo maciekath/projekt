@@ -4,8 +4,10 @@ using Soneta.Business.UI;
 using projekt.git;
 using Soneta.Zadania;
 using System.Windows.Forms;
+using projekt.git.Tabele;
 
-[assembly: Worker(typeof(ConnectWorker), typeof(Projekty))]
+
+[assembly: Worker(typeof(ConnectWorker), typeof(ProjektBrunche))]
 namespace projekt.git
 {
     public class ConnectWorker
