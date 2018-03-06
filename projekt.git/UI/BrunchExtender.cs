@@ -4,8 +4,9 @@ using Soneta.Zadania;
 using projekt.git.UI;
 using System;
 using Soneta.CRM;
-using projekt.git.Table;
-
+using projekt.git.Tabele;
+using Soneta.Kadry;
+using System.Collections;
 
 
 // Sposób w jaki należy zarejestrować extender, który później zostanie użyty w interfejsie.
@@ -17,18 +18,17 @@ namespace projekt.git.UI
 {
     public class BrunchExtender
     {
-       
-            [Context]
+
+        System.DateTime d = DateTime.Now;
+        [Context]
             public Context Context
             {
                 get;
                 set;
             }
-
-
-            System.DateTime d = DateTime.Now;
-
-            [Context]
+[Context]
+////public Kontrahent kon {get;set;}
+////        [Context]
             public Projekt proj { get; set; }
 
             public bool IsVisible
@@ -41,12 +41,24 @@ namespace projekt.git.UI
                 get { return proj == null || proj.AccessRight != AccessRights.Granted; }
             }
 
-            public ViewInfo Wyswietlmarze
+      public View WyswietlPrac
+        {
+            get
+            {
+                View g = gitModule.GetInstance(proj).Kadry.Pracownicy.WgKodu.CreateView();
+                return g;
+            }
+        }
+      
+        public ViewInfo Wyswietlmarze
             {
                 get
                 {
                     gitModule mm = gitModule.GetInstance(proj);
-
+                //foreach( Kontrahent k in kon)
+                //{
+                //    var s = k as ;
+                //}
                     var vi = new ViewInfo();
                     vi.ResourceName = "GridMarza4";
                     vi.CreateView += (sender, args) =>
@@ -57,7 +69,8 @@ namespace projekt.git.UI
                         args.View.AllowNew = !IsReadOnly;
                         args.View.NewRows = !IsReadOnly ? new[] { new NewRowAttribute(typeof(DefinicjaBrunch)) } : null;
                     };
-
+                vi.NewRowTable = "Prac";
+               
                     return vi;
                 }
             }

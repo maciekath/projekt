@@ -14,17 +14,19 @@ using System.ComponentModel;
 using Soneta.Types;
 using Soneta.Business;
 using Soneta.Zadania;
-using projekt.git.Table;
+using projekt.git.Tabele;
+using Soneta.Kadry;
 using projekt.git;
 
-[assembly: ModuleType("git", typeof(projekt.git.gitModule), 2, "git", 1, VersionNumber=11)]
+[assembly: ModuleType("git", typeof(projekt.git.gitModule), 2, "git", 1, VersionNumber=14)]
 
 namespace projekt.git {
 
 	/// <summary>
 	/// Moduł git.
 	/// <seealso cref="Soneta.Zadania"/>
-	/// <seealso cref="projekt.git.Table"/>
+	/// <seealso cref="projekt.git.Tabele"/>
+	/// <seealso cref="Soneta.Kadry"/>
 	/// </summary>
 	/// <seealso cref="Soneta.Business.Module"/>
 	/// <seealso cref="Soneta.Business.Session"/>
@@ -56,6 +58,17 @@ namespace projekt.git {
 			}
 		}
 
+		KadryModule moduleKadry = null;
+
+		[Browsable(false)]
+		public KadryModule Kadry {
+			get {
+				if (moduleKadry==null)
+				    moduleKadry = KadryModule.GetInstance(Session);
+				return moduleKadry;
+			}
+		}
+
 		static int handleProjektBrunche = 0;
 
 		private ProjektBrunche tableDefinicjaBrunch = new ProjektBrunche();
@@ -77,7 +90,7 @@ namespace projekt.git {
 		/// <seealso cref="DefinicjaBrunch"/>
 		/// <seealso cref="Soneta.Business.Table"/>
 		[TableName("DefinicjaBrunch", "Definicj", "ProjektBrunche", typeof(DefinicjaBrunch))]
-		public abstract partial class DefinicjaBrunchTable :Soneta.Business. Table {
+		public abstract partial class DefinicjaBrunchTable : Table {
 
 			protected DefinicjaBrunchTable() : base(false, false) {
 			}
@@ -110,6 +123,36 @@ namespace projekt.git {
 
 			public ProjektRelation WgProjekt {
 				get { return relationProjekt; } 
+			}
+
+			public class PracownikRelation : SimpleRelation {
+				protected override object [] GetData(Row row, Record rec) {
+					return new object[] {
+						((DefinicjaBrunchRecord)rec).Pracownik,
+						row.ID};
+				}
+				public PracownikRelation(DefinicjaBrunchTable table) {
+					Table = table;
+					Name = "Relacja dokumentow";
+					ParentName = "Pracownik";
+					ChildColumn = "Pracownik";
+					DeleteCascade = true;
+					Guided = RelationGuidedType.Inner;
+					InitFields("Pracownik", "ID");
+					table.Session.Keys.Add(this);
+				}
+
+				public SubTable this[Pracownik pracownik] {
+					get {
+						return new SubTable(this, pracownik);
+					}
+				}
+			}
+
+			PracownikRelation relationPracownik;
+
+			public PracownikRelation WgPracownik {
+				get { return relationPracownik; } 
 			}
 
 			public class WgdataKey : Key {
@@ -165,6 +208,7 @@ namespace projekt.git {
 			protected override void Adding(Module module) {
 				base.Adding(module);
 				relationProjekt = new ProjektRelation(this);
+				relationPracownik = new PracownikRelation(this);
 				keyWgdata = new WgdataKey(this);
 				SetPrimaryKey(keyWgdata);
 			}
@@ -194,11 +238,13 @@ namespace projekt.git {
 				names.Append(divider); names.Append("data");
 				names.Append(divider); names.Append("brunch");
 				names.Append(divider); names.Append("Projekt");
+				names.Append(divider); names.Append("Pracownik");
 			}
 
 			protected override sealed void PrepareTypes(System.Collections.Generic.List<Type> types) {
 				types.Add(typeof(DateTime));
 				types.Add(typeof(string));
+				types.Add(typeof(Row));
 				types.Add(typeof(Row));
 			}
 
@@ -278,6 +324,32 @@ namespace projekt.git {
 				}
 			}
 
+			[Description("Projekt do którego przypisane są brunche")]
+			[Category("Ogólne")]
+			[Caption("Pracownik")]
+			public Pracownik Pracownik {
+				get {
+					if (record==null) GetRecord();
+					if (record.Pracownik==null) return null;
+					Pracownik row = (Pracownik)record.Pracownik.Root;
+					record.Pracownik = row;
+					return row;
+				}
+				set {
+					if (DefinicjaBrunchSchema.PracownikBeforeEdit!=null)
+						DefinicjaBrunchSchema.PracownikBeforeEdit((DefinicjaBrunch)this, ref value);
+					System.Diagnostics.Debug.Assert(value==null || State==RowState.Detached || value.State==RowState.Detached || Session==value.Session);
+					GetEdit(record==null, false);
+					record.Pracownik = value;
+					LockGuidedRoot();
+					if (State!=RowState.Detached) {
+						Table.WgPracownik.ResyncSet(this);
+					}
+					if (DefinicjaBrunchSchema.PracownikAfterEdit!=null)
+						DefinicjaBrunchSchema.PracownikAfterEdit((DefinicjaBrunch)this);
+				}
+			}
+
 			[Browsable(false)]
 			public new ProjektBrunche Table {
 				get { return (ProjektBrunche)base.Table; }
@@ -313,6 +385,7 @@ namespace projekt.git {
 			protected override void OnAdded() {
 				base.OnAdded();
 				System.Diagnostics.Debug.Assert(record.Projekt==null || record.Projekt.State==RowState.Detached || Session==record.Projekt.Session);
+				System.Diagnostics.Debug.Assert(record.Pracownik==null || record.Pracownik.State==RowState.Detached || Session==record.Pracownik.Session);
 				if (DefinicjaBrunchSchema.OnAdded!=null)
 					DefinicjaBrunchSchema.OnAdded((DefinicjaBrunch)this);
 			}
@@ -360,6 +433,8 @@ namespace projekt.git {
 			[Required]
 			[ParentTable("Projekt")]
 			public IRow Projekt;
+			[ParentTable("Pracownik")]
+			public IRow Pracownik;
 
 			public override Record Clone() {
 				DefinicjaBrunchRecord rec = (DefinicjaBrunchRecord)MemberwiseClone();
@@ -371,6 +446,7 @@ namespace projekt.git {
 				data = creator.Load_date(1);
 				brunch = creator.Load_string(2);
 				Projekt = creator.Load_Row(3, "Projekty");
+				Pracownik = creator.Load_Row(4, "Pracownicy");
 			}
 		}
 
@@ -394,6 +470,16 @@ namespace projekt.git {
 			internal static RowDelegate<DefinicjaBrunchRow> brunchAfterEdit;
 			public static void AddbrunchAfterEdit(RowDelegate<DefinicjaBrunchRow> value) {
 				brunchAfterEdit = (RowDelegate<DefinicjaBrunchRow>)Delegate.Combine(brunchAfterEdit, value);
+			}
+
+			internal static RowDelegate<DefinicjaBrunchRow, Pracownik> PracownikBeforeEdit;
+			public static void AddPracownikBeforeEdit(RowDelegate<DefinicjaBrunchRow, Pracownik> value) {
+				PracownikBeforeEdit = (RowDelegate<DefinicjaBrunchRow, Pracownik>)Delegate.Combine(PracownikBeforeEdit, value);
+			}
+
+			internal static RowDelegate<DefinicjaBrunchRow> PracownikAfterEdit;
+			public static void AddPracownikAfterEdit(RowDelegate<DefinicjaBrunchRow> value) {
+				PracownikAfterEdit = (RowDelegate<DefinicjaBrunchRow>)Delegate.Combine(PracownikAfterEdit, value);
 			}
 
 			internal static RowDelegate<DefinicjaBrunchRow> OnLoaded;

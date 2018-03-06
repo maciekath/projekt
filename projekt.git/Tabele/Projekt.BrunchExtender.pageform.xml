@@ -13,7 +13,7 @@
         <Field CaptionHtml="data" Width="25" Visibility="1"  EditValue="{data}"></Field>
         <Field CaptionHtml="brunch" EditValue="{brunch}"></Field>
         <Field CaptionHtml="projekt" EditValue="{Projekt}"></Field>
-
+        <Field CaptioHtml="pracownik" EditValue="{Pracownik}"></Field>
       </Grid>
     </Group>
   </Page>
