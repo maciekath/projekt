@@ -21,14 +21,11 @@ namespace projekt.git
     {
 
       public  kafelkaViewInfo()
-
         {
             ResourceName = "kafelkaViewInfo";
             ToolbarContext = new string[] {
                 "kafelkaViewInfo+Paramskafelka.Projekt",
-
                 "kafelkaViewInfo+Paramskafelka.Okres",
-
             };
             InitContext += kafelkaViewInfo_InitContext;
             CreateView += kafelkaViewInfo_CreateView;
@@ -68,15 +65,8 @@ namespace projekt.git
                 if (view == null) view = tabM.ProjektBrunche.Wgdata[new FieldCondition.GreaterEqual("data", pars.Okres.From) & new FieldCondition.LessEqual("data", pars.Okres.To)].CreateView();
                 else view.Condition &= new FieldCondition.GreaterEqual("data", pars.Okres.From) & new FieldCondition.LessEqual("data", pars.Okres.To);
             }
-
-
-
-
-
             return view;
         }
-
-
         public class Paramskafelka : ContextBase
         {
             private const string Key = "projekt.git.kafelka";
@@ -100,33 +90,6 @@ namespace projekt.git
                     Save("Projekt");
                 }
             }
-
-
-
-            public enum Kierunek
-            {
-                Razem = 0, Rozchód = -1, Przychód = 1
-            }
-
-            public Kierunek KierunekMagazyn
-            {
-                get
-                {
-                    if (Context.Contains(typeof(Kierunek)))
-                        return (Kierunek)Context[typeof(Kierunek)];
-                    return Kierunek.Razem;
-                }
-                set
-                {
-                    Context[typeof(Kierunek)] = value;
-                    Save("KierunekMagazyn");
-                }
-            }
-
-
-
-
-
 
             public FromTo Okres
             {
