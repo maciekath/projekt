@@ -1,0 +1,19 @@
+﻿<?xml version="1.0"?>
+<DataForm xmlns="http://www.enova.pl/schema/form.xsd">
+  <Flow Name="FilterPanel">
+    <Field EditValue="{kafelkaViewInfo+Paramskafelka.Projekt}" CaptionHtml="Kontrakt" Width="30"/>
+    
+    <Field EditValue="{kafelkatViewInfo+Paramskafelka.Okres}" CaptionHtml="Okres" Width="30"/>
+
+
+  </Flow>
+
+  <Grid Name="ViewsPozycjiKontrakt" RemoveButton="None" EditButton="Visible" NewButton="None" IsToolbarVisible="true">
+    <Field EditValue="{Projekt}" CaptionHtml="Kontrakt" Width="30" />
+    <Field EditValue="{Pracownik}" CaptionHtml="Pozycja kontraktu" Width="40" />
+    <Field EditValue="{brunch }" CaptionHtml="Nr dokumentu" Width="40" />
+    <Field EditValue="{data}" CaptionHtml="Data dokumentu" Width="40" />
+    
+  </Grid>
+</DataForm>
+

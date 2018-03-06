@@ -82,7 +82,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConnectWorker.cs" />
-    <Compile Include="kafelka.cs" />
+    <Compile Include="kafelkaViewInfo.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="MyDbExtension1.business.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -113,6 +115,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="UI\kafelka.viewform.xml" />
     <EmbeddedResource Include="UI\DefinicjaBrunch.BrunchExtender.pageform.xml" />
     <EmbeddedResource Include="ConnectWorkerParams.Ogolne.pageform.xml">
       <SubType>Designer</SubType>
